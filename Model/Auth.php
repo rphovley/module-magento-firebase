@@ -21,7 +21,7 @@
 
 namespace Adobe\Firebase\Model;
 
-use Adobe\Firebase\Helper\Configuration;
+use Adobe\Firebase\Helper\Data;
 use Exception;
 use Kreait\Firebase\Auth as AuthModel;
 use Kreait\Firebase\Factory;
@@ -57,9 +57,9 @@ class Auth
     private $customerCollectionFactory;
 
     /**
-     * @var Configuration
+     * @var Data
      */
-    private $configuration;
+    private $helper;
 
     /**
      * @var UserFactory
@@ -98,7 +98,7 @@ class Auth
      * Auth constructor.
      * @param Factory $authFactory
      * @param CustomerCollectionFactory $customerCollectionFactory
-     * @param Configuration $configuration
+     * @param Data $helper
      * @param UserFactory $userFactory
      * @param AuthModel $firebaseAuth
      * @param CustomerTokenService $customerTokenService
@@ -111,7 +111,7 @@ class Auth
     public function __construct(
         Factory $authFactory,
         CustomerCollectionFactory $customerCollectionFactory,
-        Configuration $configuration,
+        Data $helper,
         UserFactory $userFactory,
         AuthModel $firebaseAuth,
         CustomerTokenService $customerTokenService,
@@ -123,7 +123,7 @@ class Auth
     ) {
         $this->authFactory = $authFactory;
         $this->customerCollectionFactory = $customerCollectionFactory;
-        $this->configuration = $configuration;
+        $this->helper = $helper;
         $this->userFactory = $userFactory;
         $this->firebaseAuth = $firebaseAuth;
         $this->customerTokenService = $customerTokenService;
@@ -215,18 +215,18 @@ class Auth
     public function getCredentials()
     {
         return [
-            "type" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_SERVICE_TYPE),
-            "project_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PROJECT_ID),
-            "private_key_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY_ID),
-            "private_key" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY),
-            "client_email" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_EMAIL),
-            "client_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_ID),
-            "auth_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_URI),
-            "token_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_TOKEN_URI),
+            "type" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_SERVICE_TYPE),
+            "project_id" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_PROJECT_ID),
+            "private_key_id" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_PRIVATE_KEY_ID),
+            "private_key" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_PRIVATE_KEY),
+            "client_email" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_CLIENT_EMAIL),
+            "client_id" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_CLIENT_ID),
+            "auth_uri" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_AUTH_URI),
+            "token_uri" => $this->helper->getConfigValue(Data::XPATH_SETTINGS_TOKEN_URI),
             "auth_provider_x509_cert_url" =>
-                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_PROVIDER_CERT_URL),
+                $this->helper->getConfigValue(Data::XPATH_SETTINGS_AUTH_PROVIDER_CERT_URL),
             "client_x509_cert_url" =>
-                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_CERT_URL),
+                $this->helper->getConfigValue(Data::XPATH_SETTINGS_CLIENT_CERT_URL),
         ];
     }
 
@@ -310,7 +310,7 @@ class Auth
      */
     public function isGoogleFBAuthenticationEnabled()
     {
-        return $this->configuration->getConfigFlagValue(Configuration::XPATH_GENERAL_ENABLED);
+        return $this->helper->getConfigFlagValue(Data::XPATH_GENERAL_ENABLED);
     }
 
     /**

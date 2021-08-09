@@ -57,7 +57,7 @@ class Data
     private $encryptor;
 
     /**
-     * Configuration constructor.
+     * Data constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param EncryptorInterface $encryptor
      */
