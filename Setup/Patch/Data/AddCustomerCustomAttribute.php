@@ -1,12 +1,32 @@
 <?php
+/*******************************************************************************
+ * ADOBE CONFIDENTIAL
+ * ___________________
+ *
+ * Copyright 2021 Adobe
+ * All Rights Reserved.
+ *
+ * NOTICE: All information contained herein is, and remains
+ * the property of Adobe and its suppliers, if any. The intellectual
+ * and technical concepts contained herein are proprietary to Adobe
+ * and its suppliers and are protected by all applicable intellectual
+ * property laws, including trade secret and copyright laws.
+ * Adobe permits you to use and modify this file
+ * in accordance with the terms of the Adobe license agreement
+ * accompanying it (see LICENSE_ADOBE_PS.txt).
+ * If you have received this file from a source other than Adobe,
+ * then your use, modification, or distribution of it
+ * requires the prior written permission from Adobe.
+ ******************************************************************************/
 
 namespace Adobe\Firebase\Setup\Patch\Data;
 
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Setup\CustomerSetup;
+use Magento\Customer\Setup\CustomerSetupFactory;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Setup\Patch\PatchRevertableInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
-use Magento\Customer\Setup\CustomerSetupFactory;
-use Magento\Customer\Setup\CustomerSetup;
 
 class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableInterface
 {
@@ -37,13 +57,23 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
     /**
      * {@inheritdoc}
      */
+    public static function getDependencies()
+    {
+        return [
+
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function apply()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
         /** @var CustomerSetup $customerSetup */
         $customerSetup = $this->customerSetupFactory->create(['setup' => $this->moduleDataSetup]);
         $customerSetup->addAttribute(
-            \Magento\Customer\Model\Customer::ENTITY,
+            Customer::ENTITY,
             'firebase_user_id',
             [
                 'type' => 'varchar',
@@ -71,13 +101,15 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
         $this->moduleDataSetup->getConnection()->endSetup();
     }
 
+    /*
+     *
+     */
     public function revert()
     {
         $this->moduleDataSetup->getConnection()->startSetup();
         /** @var CustomerSetup $customerSetup */
         $customerSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
-        $customerSetup->removeAttribute(\Magento\Customer\Model\Customer::ENTITY,
-                                        'firebase_user_id');
+        $customerSetup->removeAttribute(Customer::ENTITY, 'firebase_user_id');
 
         $this->moduleDataSetup->getConnection()->endSetup();
     }
@@ -88,15 +120,5 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
     public function getAliases()
     {
         return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getDependencies()
-    {
-        return [
-
-        ];
     }
 }

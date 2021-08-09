@@ -18,11 +18,13 @@
   * then your use, modification, or distribution of it
   * requires the prior written permission from Adobe.
   ***************************************************************************-->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Adobe_Firebase">
-        <sequence>
-            <module name="Magento_Customer"/>
-            <module name="Magento_Webapi"/>
-        </sequence>
-    </module>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Adobe_Firebase::config"/>
+                <resource id="Adobe_Firebase::api"/>
+            </resource>
+        </resources>
+    </acl>
 </config>

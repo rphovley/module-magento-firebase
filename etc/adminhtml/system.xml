@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~ ADOBE CONFIDENTIAL
-  ~ ___________________
-  ~
-  ~ Copyright 2020 Adobe
-  ~ All Rights Reserved.
-  ~
-  ~ NOTICE: All information contained herein is, and remains
-  ~ the property of Adobe and its suppliers, if any. The intellectual
-  ~ and technical concepts contained herein are proprietary to Adobe
-  ~ and its suppliers and are protected by all applicable intellectual
-  ~ property laws, including trade secret and copyright laws.
-  ~ Adobe permits you to use and modify this file
-  ~ in accordance with the terms of the Adobe license agreement
-  ~ accompanying it (see LICENSE_ADOBE_PS.txt).
-  ~ If you have received this file from a source other than Adobe,
-  ~ then your use, modification, or distribution of it
-  ~ requires the prior written permission from Adobe.
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<!--****************************************************************************
+  * ADOBE CONFIDENTIAL
+  * ___________________
+  *
+  * Copyright 2021 Adobe
+  * All Rights Reserved.
+  *
+  * NOTICE: All information contained herein is, and remains
+  * the property of Adobe and its suppliers, if any. The intellectual
+  * and technical concepts contained herein are proprietary to Adobe
+  * and its suppliers and are protected by all applicable intellectual
+  * property laws, including trade secret and copyright laws.
+  * Adobe permits you to use and modify this file
+  * in accordance with the terms of the Adobe license agreement
+  * accompanying it (see LICENSE_ADOBE_PS.txt).
+  * If you have received this file from a source other than Adobe,
+  * then your use, modification, or distribution of it
+  * requires the prior written permission from Adobe.
+  ***************************************************************************-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="firebase" translate="label" sortOrder="10">
-            <label>Firebase</label>
+            <label>Adobe Firebase</label>
         </tab>
         <section id="firebase" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Settings</label>
             <tab>firebase</tab>
-            <resource>Adobe::firebase_config</resource>
+            <resource>Adobe_Firebase::config</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General Settings</label>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -35,39 +35,69 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="settings" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Authentication Settings</label>
                 <field id="service_type" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Service Type</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="project_id" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Project Id</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="private_key_id" translate="label" type="obscure" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Private Key Id</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <comment>Find: https://console.firebase.google.com/u/0/project/{project_id}/settings/general</comment>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="private_key" translate="label" type="textarea" sortOrder="4" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Private Key</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="client_email" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Client Email</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="client_id" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Client Id</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="auth_uri" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Auth Url</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="token_uri" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Token Url</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="auth_provider_cert_url" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Auth Provider Cert Url</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
                 <field id="client_cert_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Client Cert Url</label>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

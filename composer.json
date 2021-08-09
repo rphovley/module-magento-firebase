@@ -1,19 +1,23 @@
 {
-    "name": "adobe/firebase",
-    "description": "Magento Firebase Integrator Module",
-    "type": "magento2-module",
-    "license": "proprietary",
-    "require": {
-        "magento/module-webapi": "100.4.*",
-        "kreait/firebase-php": "^5.0"
+  "name": "magento/module-adobe-firebase",
+  "description": "Magento Firebase Integrator Module",
+  "type": "magento2-module",
+  "license": "proprietary",
+  "require": {
+    "php": "~7.4.0",
+    "magento/framework": "*",
+    "magento/module-customer": "103.0.*",
+    "magento/module-webapi": "100.4.*",
+    "kreait/firebase-php": "^5.0"
+  },
+  "type": "magento2-module",
+  "autoload": {
+    "psr-4": {
+      "Adobe\\Firebase\\": ""
     },
-    "version": "100.0.0",
-    "autoload": {
-        "psr-4": {
-            "Adobe\\Firebase\\": ""
-        },
-        "files": [
-            "registration.php"
-        ]
-    }
+    "files": [
+      "registration.php"
+    ]
+  },
+  "version": "100.0.0"
 }
