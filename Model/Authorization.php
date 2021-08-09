@@ -1,9 +1,9 @@
 <?php
-/*
+/*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
  *
- * Copyright 2020 Adobe
+ * Copyright 2021 Adobe
  * All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains
@@ -17,13 +17,14 @@
  * If you have received this file from a source other than Adobe,
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
- */
+ ******************************************************************************/
 
 namespace Adobe\Firebase\Model;
 
 use Adobe\Firebase\Api\AuthorizationInterface;
-use Magento\Framework\Webapi\Request;
 use Adobe\Firebase\Model\Auth as FireBaseAuth;
+use Magento\Framework\Exception\AuthenticationException;
+use Magento\Framework\Webapi\Request;
 
 class Authorization implements AuthorizationInterface
 {
@@ -53,11 +54,11 @@ class Authorization implements AuthorizationInterface
 
     /**
      * @param string $jwtToken
-     * @return array|mixed|\string[][]
+     * @return array|mixed|string[]
      */
     public function authenticate($jwtToken)
     {
-        if(!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()){
+        if (!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()) {
             $responsefinal = [
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
@@ -87,12 +88,12 @@ class Authorization implements AuthorizationInterface
     /**
      * @param string $email
      * @param string $password
-     * @return mixed|\string[][]
-     * @throws \Magento\Framework\Exception\AuthenticationException
+     * @return mixed|string[]
+     * @throws AuthenticationException
      */
     public function generateFBToken($email, $password)
     {
-        if(!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()){
+        if (!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()) {
             $responsefinal = [
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
@@ -108,13 +109,13 @@ class Authorization implements AuthorizationInterface
         }
         /** @var Firebase Token $tokenData */
         $tokenData = $this->firebaseAuth->loginWithFirebase($email, $password);
-        if($tokenData){
+        if ($tokenData) {
             $responsefinal = [
                 'status' => 'success',
                 'firebase_token' => $tokenData
             ];
             return [$responsefinal];
-        }else{
+        } else {
             $responsefinal = [
                 'status' => 'Error',
                 'message' => 'Invalid Email / Password'

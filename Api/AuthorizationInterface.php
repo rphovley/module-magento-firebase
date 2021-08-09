@@ -1,9 +1,9 @@
 <?php
-/*
+/*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
  *
- * Copyright 2020 Adobe
+ * Copyright 2021 Adobe
  * All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains
@@ -17,7 +17,7 @@
  * If you have received this file from a source other than Adobe,
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
- */
+ ******************************************************************************/
 
 namespace Adobe\Firebase\Api;
 

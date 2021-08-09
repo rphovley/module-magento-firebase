@@ -1,9 +1,9 @@
 <?php
-/*
+/*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
  *
- * Copyright 2020 Adobe
+ * Copyright 2021 Adobe
  * All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains
@@ -17,87 +17,82 @@
  * If you have received this file from a source other than Adobe,
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
- */
+ ******************************************************************************/
 
 namespace Adobe\Firebase\Model;
 
 use Adobe\Firebase\Helper\Configuration;
-use Kreait\Firebase\Factory;
+use Exception;
 use Kreait\Firebase\Auth as AuthModel;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Kreait\Firebase\Factory;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Event\ManagerInterface;
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
-use Magento\User\Model\UserFactory;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\AuthenticationException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\State\InputMismatchException;
 use Magento\Integration\Model\CustomerTokenService;
 use Magento\Integration\Model\Oauth\Token\RequestThrottler;
 use Magento\Integration\Model\Oauth\TokenFactory;
 use Magento\Store\Model\StoreManagerInterface;
-use mysql_xdevapi\Exception;
-use PhpParser\Node\Expr\Cast\Array_;
+use Magento\User\Model\UserFactory;
 
 /**
  * Class Auth
- * Adobe\Firebase\Model
+ * @package Adobe\Firebase\Model
  */
 class Auth
 {
     /**
      * @var Factory
      */
-    protected $_authFactory;
+    private $authFactory;
 
     /**
      * @var CustomerCollectionFactory
      */
-    protected $customerCollectionFactory;
+    private $customerCollectionFactory;
 
     /**
      * @var Configuration
      */
-    protected $configuration;
+    private $configuration;
 
     /**
      * @var UserFactory
      */
-    protected $userFactory;
+    private $userFactory;
 
-    protected $_auth = null;
-
+    private $auth = null;
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+    /**
+     * @var CustomerInterfaceFactory
+     */
+    private $customerInterfaceFactory;
+    /**
+     * @var CustomerRepositoryInterface
+     */
+    private $customerRepository;
     /**
      * @var RequestThrottler
      */
     private $requestThrottler;
-
     /**
-     * @var \Magento\Framework\Event\ManagerInterface
+     * @var ManagerInterface
      */
     private $eventManager;
-
     /**
      * Token Model
      *
      * @var TokenFactory
      */
     private $tokenFactory;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var CustomerInterfaceFactory
-     */
-    protected $customerInterfaceFactory;
-
-    /**
-     * @var CustomerRepositoryInterface
-     */
-    protected $customerRepository;
-
 
     /**
      * Auth constructor.
@@ -126,60 +121,18 @@ class Auth
         CustomerRepositoryInterface $customerRepository,
         ManagerInterface $eventManager = null
     ) {
-        $this->_authFactory = $authFactory;
+        $this->authFactory = $authFactory;
         $this->customerCollectionFactory = $customerCollectionFactory;
         $this->configuration = $configuration;
         $this->userFactory = $userFactory;
-        $this->_firebaseAuth = $firebaseAuth;
-        $this->_customerTokenService = $customerTokenService;
-        $this->eventManager = $eventManager ?: \Magento\Framework\App\ObjectManager::getInstance()
+        $this->firebaseAuth = $firebaseAuth;
+        $this->customerTokenService = $customerTokenService;
+        $this->eventManager = $eventManager ?: ObjectManager::getInstance()
             ->get(ManagerInterface::class);
         $this->tokenFactory = $tokenFactory;
         $this->storeManager = $storeManager;
         $this->customerInterfaceFactory = $customerInterfaceFactory;
         $this->customerRepository = $customerRepository;
-    }
-
-    /**
-     * Generate Firebase Factory Auth Object
-     *
-     * @return AuthModel
-     * @throws LocalizedException
-     */
-    protected function getAuth()
-    {
-        if ($this->_auth) {
-            return $this->_auth;
-        }
-        try {
-            $authFactory = $this->_authFactory->withServiceAccount($this->getCredentials());
-            $this->_auth = $authFactory->createAuth();
-            return $this->_auth;
-        } catch (\Exception $e) {
-            throw new LocalizedException(__($e->getMessage()));
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getCredentials()
-    {
-        return [
-            "type" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_SERVICE_TYPE),
-            "project_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PROJECT_ID),
-            // "private_key_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY_ID),
-            "private_key_id" => '51e00632a44318f875ed4a9f63b18396170806e1',
-            "private_key" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY),
-            "client_email" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_EMAIL),
-            "client_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_ID),
-            "auth_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_URI),
-            "token_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_TOKEN_URI),
-            "auth_provider_x509_cert_url" =>
-                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_PROVIDER_CERT_URL),
-            "client_x509_cert_url" =>
-                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_CERT_URL),
-        ];
     }
 
     /**
@@ -203,7 +156,7 @@ class Auth
                 return false;
             }
             /** @var $verifyToken */
-            $verifyToken = $this->_auth->verifyIdToken($jwtToken);
+            $verifyToken = $this->auth->verifyIdToken($jwtToken);
             if ($payload = $verifyToken->claims()) {
                 $firebaseUserId = $verifyToken->claims()->get('user_id');
 
@@ -230,18 +183,51 @@ class Auth
                     return $tokenData['customerToken'];
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
         return false;
     }
 
     /**
-     * @return bool
+     * Generate Firebase Factory Auth Object
+     *
+     * @return AuthModel
+     * @throws LocalizedException
      */
-    public function isGoogleFBAuthenticationEnabled()
+    protected function getAuth()
     {
-        return $this->configuration->getConfigFlagValue(Configuration::XPATH_GENERAL_ENABLED);
+        if ($this->auth) {
+            return $this->auth;
+        }
+        try {
+            $authFactory = $this->authFactory->withServiceAccount($this->getCredentials());
+            $this->auth = $authFactory->createAuth();
+            return $this->auth;
+        } catch (Exception $e) {
+            throw new LocalizedException(__($e->getMessage()));
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getCredentials()
+    {
+        return [
+            "type" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_SERVICE_TYPE),
+            "project_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PROJECT_ID),
+            "private_key_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY_ID),
+            "private_key" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_PRIVATE_KEY),
+            "client_email" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_EMAIL),
+            "client_id" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_ID),
+            "auth_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_URI),
+            "token_uri" => $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_TOKEN_URI),
+            "auth_provider_x509_cert_url" =>
+                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_AUTH_PROVIDER_CERT_URL),
+            "client_x509_cert_url" =>
+                $this->configuration->getConfigValue(Configuration::XPATH_SETTINGS_CLIENT_CERT_URL),
+        ];
     }
 
     /**
@@ -261,7 +247,7 @@ class Auth
                 RequestThrottler::USER_TYPE_CUSTOMER
             );
             return $this->tokenFactory->create()->createCustomerToken($customer->getId())->getToken();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getRequestThrottler()->logAuthenticationFailure(
                 $customer->getData('email'),
                 RequestThrottler::USER_TYPE_CUSTOMER
@@ -276,29 +262,6 @@ class Auth
     }
 
     /**
-     * Generate Firebase Token by using Email & Password
-     *
-     * @param $email
-     * @param $password
-     * @return string | false
-     * @throws AuthenticationException
-     */
-    public function loginWithFirebase($email, $password)
-    {
-        try {
-            $auth = $this->getAuth();
-            $result = $auth->signInWithEmailAndPassword($email, $password);
-            if ($result) {
-                return array_values((array)$result)[0];
-            } else {
-                return false;
-            }
-        } catch (\Exception $e) {
-            throw new AuthenticationException(__('Invalid Email or Password. Please Try again'));
-        }
-    }
-
-    /**
      * Get request throttler instance
      *
      * @return RequestThrottler
@@ -306,7 +269,7 @@ class Auth
     private function getRequestThrottler()
     {
         if (!$this->requestThrottler instanceof RequestThrottler) {
-            return \Magento\Framework\App\ObjectManager::getInstance()->get(RequestThrottler::class);
+            return ObjectManager::getInstance()->get(RequestThrottler::class);
         }
         return $this->requestThrottler;
     }
@@ -317,8 +280,8 @@ class Auth
      * @param $customerData
      * @return CustomerRepository
      * @throws LocalizedException
-     * @throws \Magento\Framework\Exception\InputException
-     * @throws \Magento\Framework\Exception\State\InputMismatchException
+     * @throws InputException
+     * @throws InputMismatchException
      */
     public function saveCustomerAccount($customerData)
     {
@@ -339,6 +302,37 @@ class Auth
             return $customer;
         } catch (Exception $e) {
             throw new LocalizedException(__($e->getMessage()));
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGoogleFBAuthenticationEnabled()
+    {
+        return $this->configuration->getConfigFlagValue(Configuration::XPATH_GENERAL_ENABLED);
+    }
+
+    /**
+     * Generate Firebase Token by using Email & Password
+     *
+     * @param $email
+     * @param $password
+     * @return string | false
+     * @throws AuthenticationException
+     */
+    public function loginWithFirebase($email, $password)
+    {
+        try {
+            $auth = $this->getAuth();
+            $result = $auth->signInWithEmailAndPassword($email, $password);
+            if ($result) {
+                return array_values((array)$result)[0];
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            throw new AuthenticationException(__('Invalid Email or Password. Please Try again'));
         }
     }
 }

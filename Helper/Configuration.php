@@ -1,9 +1,9 @@
 <?php
-/*
+/*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
  *
- * Copyright 2020 Adobe
+ * Copyright 2021 Adobe
  * All Rights Reserved.
  *
  * NOTICE: All information contained herein is, and remains
@@ -17,19 +17,19 @@
  * If you have received this file from a source other than Adobe,
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
- */
+ ******************************************************************************/
 
 namespace Adobe\Firebase\Helper;
 
-use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Model\ScopeInterface;
 
 /**
- * Class Configuration
- * Adobe\Firebase\Helper
+ * Class Data
+ * @package Adobe\Firebase\Helper
  */
-class Configuration
+class Data
 {
     const XPATH_GENERAL_ENABLED = 'firebase/general/enabled';
     const XPATH_GENERAL_ENABLED_FOR_ADMIN_WEB = 'firebase/general/enabled_for_admin_web';
@@ -49,7 +49,7 @@ class Configuration
     /**
      * @var ScopeConfigInterface
      */
-    protected $scopeConfig;
+    private $scopeConfig;
 
     /**
      * @var EncryptorInterface
