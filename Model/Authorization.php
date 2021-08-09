@@ -56,7 +56,7 @@ class Authorization implements AuthorizationInterface
      * @param string $jwtToken
      * @return array|mixed|string[]
      */
-    public function authenticate($jwtToken)
+    public function authenticate()
     {
         if (!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()) {
             $responsefinal = [
@@ -65,15 +65,10 @@ class Authorization implements AuthorizationInterface
             ];
             return [$responsefinal];
         }
-        if (!$jwtToken) {
-            $responsefinal = [
-                'status' => 'Error',
-                'message' => 'Firebase JWT Token is missing'
-            ];
-            return [$responsefinal];
-        }
 
         /** @var Magento Customer Token $tokenData */
+        $jwtToken = $this->request->getParams('jwt_token');
+
         $tokenData = $this->firebaseAuth->getTokenData($jwtToken);
         if (!$tokenData) {
             $responsefinal = [

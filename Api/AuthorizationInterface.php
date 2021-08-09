@@ -26,10 +26,9 @@ interface AuthorizationInterface
 {
 
     /**
-     * @param string $jwtToken
      * @return mixed
      */
-    public function authenticate($jwtToken);
+    public function authenticate();
 
     /**
      * @param string $email
