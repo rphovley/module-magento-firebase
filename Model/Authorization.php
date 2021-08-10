@@ -22,17 +22,16 @@
 namespace Adobe\Firebase\Model;
 
 use Adobe\Firebase\Api\AuthorizationInterface;
-use Adobe\Firebase\Model\Auth as FireBaseAuth;
+use Adobe\Firebase\Model\Management\AuthManagement;
 use Magento\Framework\Exception\AuthenticationException;
 use Magento\Framework\Webapi\Request;
 
 class Authorization implements AuthorizationInterface
 {
-
     /**
-     * @var Auth
+     * @var AuthManagement
      */
-    private $firebaseAuth;
+    private $authManagement;
 
     /**
      * @var Request
@@ -40,44 +39,60 @@ class Authorization implements AuthorizationInterface
     private $request;
 
     /**
+     * @var \Adobe\Firebase\Helper\Data
+     */
+    private $helper;
+
+    /**
      * Authorization constructor.
      * @param Request $request
-     * @param Auth $firebaseAuth
+     * @param AuthManagement $authManagement
+     * @param \Adobe\Firebase\Helper\Data $helper
      */
     public function __construct(
         Request $request,
-        FireBaseAuth $firebaseAuth
+        AuthManagement $authManagement,
+        \Adobe\Firebase\Helper\Data $helper
     ) {
         $this->request = $request;
-        $this->firebaseAuth = $firebaseAuth;
+        $this->authManagement = $authManagement;
+        $this->helper = $helper;
     }
 
     /**
      * @param string $jwtToken
-     * @return array|mixed|string[]
+     * @return array|mixed
      */
-    public function authenticate()
+    public function authenticate(string $jwtToken)
     {
-        if (!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()) {
-            $responsefinal = [
+        $response = [];
+        if (!$this->helper->isFireBaseAuthenticationEnabled()) {
+            $response = [
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
             ];
-            return [$responsefinal];
+
+            return $response;
+        }
+        if (!$jwtToken) {
+            $response = [
+                'status' => 'Error',
+                'message' => 'Firebase JWT Token is missing'
+            ];
+
+            return $response;
         }
 
         /** @var Magento Customer Token $tokenData */
-        $jwtToken = $this->request->getParams('jwt_token');
-
-        $tokenData = $this->firebaseAuth->getTokenData($jwtToken);
-        if (!$tokenData) {
-            $responsefinal = [
+        $customerToken = $this->authManagement->getCustomerToken($jwtToken);
+        if (!$customerToken) {
+            $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Firebase JWT Token'
             ];
-            return [$responsefinal];
+            return $response;
         }
-        return [$tokenData];
+        return [$customerToken];
     }
 
     /**
@@ -86,36 +101,37 @@ class Authorization implements AuthorizationInterface
      * @return mixed|string[]
      * @throws AuthenticationException
      */
-    public function generateFBToken($email, $password)
+    public function generateToken($email, $password)
     {
-        if (!$this->firebaseAuth->isGoogleFBAuthenticationEnabled()) {
-            $responsefinal = [
+        if (!$this->helper->isFireBaseAuthenticationEnabled()) {
+            $response = [
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
             ];
-            return [$responsefinal];
+            return $response;
         }
         if (!$email || !$password) {
-            $responsefinal = [
+            $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Email / Password'
             ];
-            return [$responsefinal];
+            return $response;
         }
+
         /** @var Firebase Token $tokenData */
-        $tokenData = $this->firebaseAuth->loginWithFirebase($email, $password);
+        $tokenData = $this->authManagement->getFireBaseToken($email, $password);
         if ($tokenData) {
-            $responsefinal = [
+            $response = [
                 'status' => 'success',
                 'firebase_token' => $tokenData
             ];
-            return [$responsefinal];
+            return $response;
         } else {
-            $responsefinal = [
+            $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Email / Password'
             ];
-            return [$responsefinal];
+            return $response;
         }
     }
 }

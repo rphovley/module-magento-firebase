@@ -26,7 +26,7 @@
         </resources>
     </route>
     <route url="/V1/firebase/generateToken" method="POST">
-        <service class="Adobe\Firebase\Api\AuthorizationInterface" method="generateFBToken"/>
+        <service class="Adobe\Firebase\Api\AuthorizationInterface" method="generateToken"/>
         <resources>
             <resource ref="Adobe_Firebase::api"/>
         </resources>
