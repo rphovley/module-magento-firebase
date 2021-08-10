@@ -29,12 +29,12 @@ interface AuthorizationInterface
      * @param string $jwtToken
      * @return mixed
      */
-    public function authenticate($jwtToken);
+    public function authenticate(string $jwtToken);
 
     /**
      * @param string $email
      * @param string $password
      * @return mixed
      */
-    public function generateFBToken($email, $password);
+    public function generateToken($email, $password);
 }

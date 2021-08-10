@@ -22,8 +22,14 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Adobe_Firebase::config"/>
-                <resource id="Adobe_Firebase::api"/>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Adobe_Firebase::config" title="Adobe Firebase Config" translate="title" />
+                            <resource id="Adobe_Firebase::api" title="Adobe Firebase API" translate="title" />
+                        </resource>
+                    </resource>
+                </resource>
             </resource>
         </resources>
     </acl>

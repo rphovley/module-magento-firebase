@@ -21,7 +21,8 @@
 
 namespace Adobe\Firebase\Helper;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -29,12 +30,9 @@ use Magento\Store\Model\ScopeInterface;
  * Class Data
  * @package Adobe\Firebase\Helper
  */
-class Data
+class Data extends AbstractHelper
 {
     const XPATH_GENERAL_ENABLED = 'firebase/general/enabled';
-    const XPATH_GENERAL_ENABLED_FOR_ADMIN_WEB = 'firebase/general/enabled_for_admin_web';
-    const XPATH_GENERAL_ADMIN_ROLES = 'firebase/general/admin_roles';
-    const XPATH_GENERAL_ADMIN_USER_IDENTIFIER = 'firebase/general/admin_user_identifier';
     const XPATH_SETTINGS_SERVICE_TYPE = 'firebase/settings/service_type';
     const XPATH_SETTINGS_PROJECT_ID = 'firebase/settings/project_id';
     const XPATH_SETTINGS_PRIVATE_KEY_ID = 'firebase/settings/private_key_id';
@@ -47,45 +45,143 @@ class Data
     const XPATH_SETTINGS_CLIENT_CERT_URL = 'firebase/settings/client_cert_url';
 
     /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
      * @var EncryptorInterface
      */
     private $encryptor;
 
     /**
      * Data constructor.
-     * @param ScopeConfigInterface $scopeConfig
      * @param EncryptorInterface $encryptor
+     * @param Context $context
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        EncryptorInterface $encryptor
+        EncryptorInterface $encryptor,
+        Context $context
     ) {
-        $this->scopeConfig = $scopeConfig;
         $this->encryptor = $encryptor;
+        parent::__construct($context);
     }
 
     /**
-     * @param $path
-     * @param null $storeId
-     * @return mixed
-     */
-    public function getConfigValue($path, $storeId = null)
-    {
-        return $this->scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $storeId);
-    }
-
-    /**
-     * @param $path
-     * @param null $storeId
      * @return bool
      */
-    public function getConfigFlagValue($path, $storeId = null)
+    public function isFireBaseAuthenticationEnabled(): bool
     {
-        return $this->scopeConfig->isSetFlag($path, ScopeInterface::SCOPE_STORE, $storeId);
+        return $this->scopeConfig->isSetFlag(
+                self::XPATH_GENERAL_ENABLED,
+                ScopeInterface::SCOPE_STORE
+            ) == 1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceType(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_SERVICE_TYPE,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getProjectId(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_PROJECT_ID,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrivateKeyId(): string
+    {
+        $privateKeyId = $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_PRIVATE_KEY_ID,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        return $this->encryptor->decrypt($privateKeyId);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrivateKey(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_PRIVATE_KEY,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientEmail(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_CLIENT_EMAIL,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_CLIENT_ID,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthUrl(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_AUTH_URI,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenUrl(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_TOKEN_URI,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthProviderCertUrl(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_AUTH_PROVIDER_CERT_URL,
+            ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientCertUrl(): string
+    {
+        return $this->scopeConfig->getValue(
+            self::XPATH_SETTINGS_CLIENT_CERT_URL,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }
