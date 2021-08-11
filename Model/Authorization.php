@@ -61,9 +61,11 @@ class Authorization implements AuthorizationInterface
 
     /**
      * @param string $jwtToken
-     * @return array|mixed
+     * @param string $firstname
+     * @param string $lastname
+     * @return array|mixed|string[]
      */
-    public function authenticate(string $jwtToken)
+    public function authenticate(string $jwtToken, string $firstname, string $lastname)
     {
         $response = [];
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
@@ -71,26 +73,43 @@ class Authorization implements AuthorizationInterface
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
             ];
-
-            return $response;
+            return json_encode($response);
         }
         if (!$jwtToken) {
             $response = [
                 'status' => 'Error',
                 'message' => 'Firebase JWT Token is missing'
             ];
-
-            return $response;
+            return json_encode($response);
+        }
+        if (!$firstname) {
+            $response = [
+                'status' => 'Error',
+                'message' => 'Firstname Field value is missing'
+            ];
+            return json_encode($response);
+        }
+        if (!$lastname) {
+            $response = [
+                'status' => 'Error',
+                'message' => 'Lastname Field value is missing'
+            ];
+            return json_encode($response);
         }
 
         /** @var Magento Customer Token $tokenData */
-        $customerToken = $this->authManagement->getCustomerToken($jwtToken);
+        $customerData = [
+            'jwt_token' => $jwtToken,
+            'firstname' => $firstname,
+            'lastname'  => $lastname
+            ];
+        $customerToken = $this->authManagement->getCustomerToken($customerData);
         if (!$customerToken) {
             $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Firebase JWT Token'
             ];
-            return $response;
+            return json_encode($response);
         }
         return [$customerToken];
     }
@@ -108,30 +127,30 @@ class Authorization implements AuthorizationInterface
                 'status' => 'Error',
                 'message' => 'Google Firebase Authentication is not Enabled'
             ];
-            return $response;
+            return json_encode($response);
         }
         if (!$email || !$password) {
             $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Email / Password'
             ];
-            return $response;
+            return json_encode($response);
         }
 
         /** @var Firebase Token $tokenData */
         $tokenData = $this->authManagement->getFireBaseToken($email, $password);
         if ($tokenData) {
-            $response = [
+            $response = array(
                 'status' => 'success',
-                'firebase_token' => $tokenData
-            ];
-            return $response;
+                'firebase_token' => $tokenData['idToken']
+            );
+            return json_encode($response);
         } else {
             $response = [
                 'status' => 'Error',
                 'message' => 'Invalid Email / Password'
             ];
-            return $response;
+            return json_encode($response);
         }
     }
 }
