@@ -36,6 +36,7 @@ use Magento\Integration\Model\Oauth\Token\RequestThrottler;
 use Magento\Integration\Model\Oauth\TokenFactory;
 use Magento\Store\Model\StoreManagerInterface;
 
+
 /**
  * Class AuthManagement
  * @package Adobe\Firebase\Model\Management
@@ -295,7 +296,6 @@ class AuthManagement
             /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
             $fireBaseAuth = $this->getFireBaseAuth();
             $result = $fireBaseAuth->signInWithEmailAndPassword($email, $password);
-
             if ($result) {
                 /**
                 Array(
@@ -311,6 +311,30 @@ class AuthManagement
             }
         } catch (Exception $e) {
             throw new AuthenticationException(__('Invalid Email or Password. Please Try again'));
+        }
+    }
+
+
+    /**
+     * @param array $customerData
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getCustomerData(array $customerData)
+    {
+        $firebaseUserId = $customerData['firebase_user_id'];
+        /** @var CustomerCollectionFactory $customer */
+        $customer = $this->customerCollectionFactory->create()
+            ->addAttributeToFilter('firebase_user_id', $firebaseUserId)
+            ->getFirstItem();
+        if ($customer && $customer->getId()) {
+            // Return Customer Object
+            return $this->customerRepository->get($customerData['email']);
+        } else {
+            // Create Customer Account
+            $customer = $this->createCustomerAccount($customerData);
+            // Return Customer Object
+            return $customer;
         }
     }
 }
