@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -125,22 +126,21 @@ class AuthManagement
     }
 
     /**
-     * Function to validate the Firebase Token
-     *
-     * @param string $jwtToken
-     * @return bool|mixed
+     * @param array $customerData
+     * @return false|string
      */
-    public function getCustomerToken(string $jwtToken)
+    public function getCustomerToken(array $customerData)
     {
         try {
             /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
             $fireBaseAuth = $this->getFireBaseAuth();
 
             /** @var \Lcobucci\JWT\Token\Plain $verifyToken */
-            $verifyToken = $fireBaseAuth->verifyIdToken($jwtToken);
+            $verifyToken = $fireBaseAuth->verifyIdToken($customerData['jwt_token']);
             if ($payload = $verifyToken->claims()) {
-                $firebaseUserId = $verifyToken->claims()->get('user_id');
-                $customerToken = $this->getCustomerTokenByFireBaseUserId($firebaseUserId);
+                $customerData['firebase_user_id'] = $verifyToken->claims()->get('user_id');
+                $customerData['email'] = $verifyToken->claims()->get('email');
+                $customerToken = $this->getCustomerTokenByFireBaseUserData($customerData);
                 return $customerToken;
             }
         } catch (Exception $e) {
@@ -185,13 +185,14 @@ class AuthManagement
     }
 
     /**
-     * @param string $firebaseUserId
+     * @param array $customerData
      * @return string
      * @throws AuthenticationException
      * @throws LocalizedException
      */
-    private function getCustomerTokenByFireBaseUserId(string $firebaseUserId): string
+    private function getCustomerTokenByFireBaseUserData(array $customerData): string
     {
+        $firebaseUserId = $customerData['firebase_user_id'];
         /** @var CustomerCollectionFactory $customer */
         $customer = $this->customerCollectionFactory->create()
             ->addAttributeToFilter('firebase_user_id', $firebaseUserId)
@@ -200,15 +201,8 @@ class AuthManagement
             // Generate the Customer Token
             return $this->createCustomerAccessToken($customer);
         } else {
-            $customerdata['email'] = $verifyToken->claims()->get('email');
-            $customerdata['name'] = $verifyToken->claims()->get('display_name') ?? preg_replace(
-                    '/[^A-Za-z0-9\-]/',
-                    '',
-                    explode('@', $customerdata['email'])[0]
-                );
-            $customerdata['user_id'] = $firebaseUserId;
             // Create Customer Account
-            $customer = $this->createCustomerAccount($customerdata);
+            $customer = $this->createCustomerAccount($customerData);
             // Generate the Customer Token
             return $this->createCustomerAccessToken($customer);
         }
@@ -224,16 +218,16 @@ class AuthManagement
     private function createCustomerAccessToken($customer)
     {
         try {
-            $this->getRequestThrottler()->throttle($customer->getData('email'), RequestThrottler::USER_TYPE_CUSTOMER);
+            $this->getRequestThrottler()->throttle($customer->getEmail(), RequestThrottler::USER_TYPE_CUSTOMER);
             $this->eventManager->dispatch('customer_login', ['customer' => $customer]);
             $this->getRequestThrottler()->resetAuthenticationFailuresCount(
-                $customer->getData('email'),
+                $customer->getEmail(),
                 RequestThrottler::USER_TYPE_CUSTOMER
             );
             return $this->tokenFactory->create()->createCustomerToken($customer->getId())->getToken();
         } catch (Exception $e) {
             $this->getRequestThrottler()->logAuthenticationFailure(
-                $customer->getData('email'),
+                $customer->getEmail(),
                 RequestThrottler::USER_TYPE_CUSTOMER
             );
             throw new AuthenticationException(
@@ -270,15 +264,15 @@ class AuthManagement
         try {
             $websiteId = $this->storeManager->getDefaultStoreView()->getWebsiteId();
             $storeId = $this->storeManager->getDefaultStoreView()->getId();
-            $customerPassword = $customerData['user_id'] . rand();
+            $customerPassword = md5($customerData['firebase_user_id']);
             /** @var CustomerInterfaceFactory $customer */
             $customer = $this->customerInterfaceFactory->create();
             $customer->setEmail($customerData['email']);
-            $customer->setFirstname($customerData['name']);
-            $customer->setLastname($customerData['name']);
+            $customer->setFirstname($customerData['firstname']);
+            $customer->setLastname($customerData['lastname']);
             $customer->setWebsiteId($websiteId);
             $customer->setStoreId($storeId);
-            $customer->setCustomAttribute('firebase_user_id', $customerData['user_id']);
+            $customer->setCustomAttribute('firebase_user_id', $customerData['firebase_user_id']);
             /** @var CustomerRepository $customer */
             $customer = $this->customerRepository->save($customer, $customerPassword);
             return $customer;
@@ -295,7 +289,7 @@ class AuthManagement
      * @return 0|bool
      * @throws AuthenticationException
      */
-    public function getFireBaseToken($email, $password)
+    public function getFireBaseUserInfo($email, $password)
     {
         try {
             /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
@@ -303,7 +297,15 @@ class AuthManagement
             $result = $fireBaseAuth->signInWithEmailAndPassword($email, $password);
 
             if ($result) {
-                return array_values((array)$result)[0];
+                /**
+                Array(
+                [localId] => {Customer Firebase User ID}
+                [email] => { Customer Email Address }
+                [displayName] => {Customer Display Name }
+                [idToken] => {JWT TOKEN}
+                )
+                */
+                return $result->data();
             } else {
                 return false;
             }
