@@ -66,7 +66,7 @@ class Authorization implements AuthorizationInterface
      * @param string $lastname
      * @return array|mixed|string[]
      */
-    public function authorize(string $jwtToken, string $firstname, string $lastname)
+    public function authenticate(string $jwtToken, string $firstname, string $lastname)
     {
         $response = [];
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
