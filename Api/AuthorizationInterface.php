@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -24,12 +25,13 @@ namespace Adobe\Firebase\Api;
 
 interface AuthorizationInterface
 {
-
     /**
      * @param string $jwtToken
+     * @param string $firstname
+     * @param string $lastname
      * @return mixed
      */
-    public function authenticate(string $jwtToken);
+    public function authenticate(string $jwtToken, string $firstname, string $lastname);
 
     /**
      * @param string $email

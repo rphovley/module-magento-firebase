@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -184,14 +185,14 @@ class AuthManagement
     }
 
     /**
-     * @param array $firebaseUserData
+     * @param array $customerData
      * @return string
      * @throws AuthenticationException
      * @throws LocalizedException
      */
-    private function getCustomerTokenByFireBaseUserData(array $firebaseUserData): string
+    private function getCustomerTokenByFireBaseUserData(array $customerData): string
     {
-        $firebaseUserId = $firebaseUserData['firebase_user_id'];
+        $firebaseUserId = $customerData['firebase_user_id'];
         /** @var CustomerCollectionFactory $customer */
         $customer = $this->customerCollectionFactory->create()
             ->addAttributeToFilter('firebase_user_id', $firebaseUserId)
@@ -201,12 +202,11 @@ class AuthManagement
             return $this->createCustomerAccessToken($customer);
         } else {
             // Create Customer Account
-            $customer = $this->createCustomerAccount($firebaseUserData);
+            $customer = $this->createCustomerAccount($customerData);
             // Generate the Customer Token
             return $this->createCustomerAccessToken($customer);
         }
     }
-
 
     /**
      * Generate Customer Access Token
@@ -289,7 +289,7 @@ class AuthManagement
      * @return 0|bool
      * @throws AuthenticationException
      */
-    public function getFireBaseToken($email, $password)
+    public function getFireBaseUserInfo($email, $password)
     {
         try {
             /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */

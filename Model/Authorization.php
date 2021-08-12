@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -138,7 +139,7 @@ class Authorization implements AuthorizationInterface
         }
 
         /** @var Firebase Token $tokenData */
-        $tokenData = $this->authManagement->getFireBaseToken($email, $password);
+        $tokenData = $this->authManagement->getFireBaseUserInfo($email, $password);
         if ($tokenData) {
             $response = array(
                 'status' => 'success',
