@@ -34,6 +34,7 @@ use Magento\Store\Model\ScopeInterface;
 class Data extends AbstractHelper
 {
     const XPATH_GENERAL_ENABLED = 'firebase/general/enabled';
+    const XPATH_GENERAL_FRONTEND_ENABLED = 'firebase/general/frontend_enabled';
     const XPATH_SETTINGS_SERVICE_TYPE = 'firebase/settings/service_type';
     const XPATH_SETTINGS_PROJECT_ID = 'firebase/settings/project_id';
     const XPATH_SETTINGS_PRIVATE_KEY_ID = 'firebase/settings/private_key_id';
@@ -70,6 +71,14 @@ class Data extends AbstractHelper
     {
         return $this->scopeConfig->isSetFlag(
                 self::XPATH_GENERAL_ENABLED,
+                ScopeInterface::SCOPE_STORE
+            ) == 1;
+    }
+
+    public function isFireBaseFrontendAuthenticationEnabled(): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+                self::XPATH_GENERAL_FRONTEND_ENABLED,
                 ScopeInterface::SCOPE_STORE
             ) == 1;
     }

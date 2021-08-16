@@ -34,6 +34,13 @@
                     <label>Enable Google Firebase Authentication</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="frontend_enabled" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable FireBase Based Frontend Login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="firebase/general/enabled">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="settings" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Authentication Settings</label>

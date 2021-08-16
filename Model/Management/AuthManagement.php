@@ -36,6 +36,7 @@ use Magento\Integration\Model\Oauth\Token\RequestThrottler;
 use Magento\Integration\Model\Oauth\TokenFactory;
 use Magento\Store\Model\StoreManagerInterface;
 
+
 /**
  * Class AuthManagement
  * @package Adobe\Firebase\Model\Management
@@ -192,12 +193,14 @@ class AuthManagement
      */
     private function getCustomerTokenByFireBaseUserData(array $customerData): string
     {
-        $firebaseUserId = $customerData['firebase_user_id'];
         /** @var CustomerCollectionFactory $customer */
         $customer = $this->customerCollectionFactory->create()
-            ->addAttributeToFilter('firebase_user_id', $firebaseUserId)
+            ->addAttributeToFilter('email', $customerData['email'])
             ->getFirstItem();
         if ($customer && $customer->getId()) {
+            /* Check Whether Customer Firebase User ID is exist on customer account or not,
+               If not, Save the User Id as part of Customer Account */
+            $this->setFirebaseDetails($customerData['email'], $customerData['firebase_user_id']);
             // Generate the Customer Token
             return $this->createCustomerAccessToken($customer);
         } else {
@@ -295,7 +298,6 @@ class AuthManagement
             /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
             $fireBaseAuth = $this->getFireBaseAuth();
             $result = $fireBaseAuth->signInWithEmailAndPassword($email, $password);
-
             if ($result) {
                 /**
                 Array(
@@ -311,6 +313,49 @@ class AuthManagement
             }
         } catch (Exception $e) {
             throw new AuthenticationException(__('Invalid Email or Password. Please Try again'));
+        }
+    }
+
+    /**
+     * @param array $customerData
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getCustomerData(array $customerData)
+    {
+        /** @var CustomerCollectionFactory $customer */
+        $customer = $this->customerCollectionFactory->create()
+            ->addAttributeToFilter('email', $customerData['email'])
+            ->getFirstItem();
+        if ($customer && $customer->getId()) {
+            /* Check Whether Customer Firebase User ID is exist or not,
+               If not, Save the User Id as part of Customer Account */
+            return $this->setFirebaseDetails($customerData['email'], $customerData['firebase_user_id']);
+        } else {
+            // Create Customer Account
+            $customer = $this->createCustomerAccount($customerData);
+            // Return Customer Object
+            return $customer;
+        }
+    }
+
+    /**
+     * @param string $email
+     * @param string $firebaseUserId
+     * @return \Magento\Customer\Api\Data\CustomerInterface | string
+     */
+    public function setFirebaseDetails(string $email, string $firebaseUserId)
+    {
+        try {
+            $customer = $this->customerRepository->get($email);
+            if (!$customer->getCustomAttribute('firebase_user_id')) {
+                $customer->setCustomAttribute('firebase_user_id', $firebaseUserId);
+                // Return Customer Object
+                return $this->customerRepository->save($customer);
+            }
+            return $customer;
+        }catch (Exception $e){
+            return $e->getMessage();
         }
     }
 }
