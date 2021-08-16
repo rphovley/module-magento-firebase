@@ -94,8 +94,10 @@ class LoginPost extends \Magento\Customer\Controller\Account\LoginPost
                      * Section to handle Firebase Authentication and
                      * Customer Account Creation if not exist
                      */
-                    if($this->helper->isFireBaseAuthenticationEnabled())
-                    {
+                    if(
+                        $this->helper->isFireBaseAuthenticationEnabled() &&
+                        $this->helper->isFireBaseFrontendAuthenticationEnabled()
+                    ){
                         /** @var $customerData */
                         $customerData = $this->authManagement->getFireBaseUserInfo(
                             $login['username'],
