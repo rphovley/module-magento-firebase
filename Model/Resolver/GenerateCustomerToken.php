@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Adobe\Firebase\Model\Resolver;
 
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
@@ -33,18 +32,19 @@ class GenerateCustomerToken implements ResolverInterface
     {
         try {
             if (!isset($args['input']['jwt_token'])) {
-                throw new LocalizedException(__('"jwt_token" can not be empty'));
+                throw new GraphQlInputException(__('"jwt_token" can not be empty'));
             }
 
             if (!isset($args['input']['first_name'])) {
-                throw new LocalizedException(__('"first_name" can not be empty'));
+                throw new GraphQlInputException(__('"first_name" can not be empty'));
             }
 
             if (!isset($args['input']['last_name'])) {
-                throw new LocalizedException(__('"last_name" can not be empty'));
+                throw new GraphQlInputException(__('"last_name" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->authorize($args['input']['jwt_token'], $args['input']['first_name'], $args['input']['last_name']);
+            $output['result'] = $this->authorization->authorize($args['input']['jwt_token'],
+                $args['input']['first_name'], $args['input']['last_name']);
 
             return $output;
 

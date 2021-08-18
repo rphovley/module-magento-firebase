@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Adobe\Firebase\Model\Resolver;
 
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
@@ -33,14 +32,15 @@ class GenerateFireBaseToken implements ResolverInterface
         try {
 
             if (!isset($args['input']['email'])) {
-                throw new LocalizedException(__('"email" can not be empty'));
+                throw new GraphQlInputException(__('"email" can not be empty'));
             }
 
             if (!isset($args['input']['password'])) {
-                throw new LocalizedException(__('"password" can not be empty'));
+                throw new GraphQlInputException(__('"password" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->generateToken($args['input']['email'],$args['input']['password']);
+            $output['result'] = $this->authorization->generateToken($args['input']['email'],
+                $args['input']['password']);
 
             return $output;
 
