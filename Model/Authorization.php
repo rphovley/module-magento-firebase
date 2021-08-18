@@ -108,11 +108,11 @@ class Authorization implements AuthorizationInterface
         if (!$customerToken) {
             $response = [
                 'status' => 'Error',
-                'message' => 'Invalid Firebase JWT Token'
+                'message' => 'Invalid FireBase JWT Token'
             ];
             return json_encode($response);
         }
-        return [$customerToken];
+        return json_encode($customerToken);
     }
 
     /**
@@ -133,7 +133,7 @@ class Authorization implements AuthorizationInterface
         if (!$email || !$password) {
             $response = [
                 'status' => 'Error',
-                'message' => 'Invalid Email / Password'
+                'message' => 'Invalid Password'
             ];
             return json_encode($response);
         }
