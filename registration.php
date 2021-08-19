@@ -23,6 +23,6 @@ use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
-    'Magento_Firebase',
+    'Qsciences_Firebase',
     __DIR__
 );

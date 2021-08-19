@@ -20,7 +20,7 @@ declare(strict_types=1);
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Magento\Firebase\Helper;
+namespace Qsciences\Firebase\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;

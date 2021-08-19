@@ -20,10 +20,10 @@ declare(strict_types=1);
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Magento\Firebase\Model;
+namespace Qsciences\Firebase\Model;
 
-use Magento\Firebase\Api\AuthorizationInterface;
-use Magento\Firebase\Model\Management\AuthManagement;
+use Qsciences\Firebase\Api\AuthorizationInterface;
+use Qsciences\Firebase\Model\Management\AuthManagement;
 use Magento\Framework\Exception\AuthenticationException;
 use Magento\Framework\Webapi\Request;
 
@@ -40,7 +40,7 @@ class Authorization implements AuthorizationInterface
     private $request;
 
     /**
-     * @var \Magento\Firebase\Helper\Data
+     * @var \Qsciences\Firebase\Helper\Data
      */
     private $helper;
 
@@ -48,12 +48,12 @@ class Authorization implements AuthorizationInterface
      * Authorization constructor.
      * @param Request $request
      * @param AuthManagement $authManagement
-     * @param \Magento\Firebase\Helper\Data $helper
+     * @param \Qsciences\Firebase\Helper\Data $helper
      */
     public function __construct(
         Request $request,
         AuthManagement $authManagement,
-        \Magento\Firebase\Helper\Data $helper
+        \Qsciences\Firebase\Helper\Data $helper
     ) {
         $this->request = $request;
         $this->authManagement = $authManagement;
