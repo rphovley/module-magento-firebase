@@ -21,13 +21,13 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="firebase" translate="label" sortOrder="10">
-            <label>Adobe Firebase</label>
+            <label>QSciences Firebase</label>
         </tab>
         <section id="firebase" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
             <label>Settings</label>
             <tab>firebase</tab>
-            <resource>Adobe_Firebase::config</resource>
+            <resource>Qsciences_Firebase::config</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General Settings</label>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">

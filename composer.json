@@ -1,6 +1,6 @@
 {
-  "name": "magento/module-adobe-firebase",
-  "description": "Magento Firebase Integrator Module",
+  "name": "qsciences/module-magento-firebase",
+  "description": "Qsciences Firebase Integrator Module",
   "type": "magento2-module",
   "license": "proprietary",
   "require": {
@@ -13,7 +13,7 @@
   "type": "magento2-module",
   "autoload": {
     "psr-4": {
-      "Adobe\\Firebase\\": ""
+      "Qsciences\\Firebase\\": ""
     },
     "files": [
       "registration.php"

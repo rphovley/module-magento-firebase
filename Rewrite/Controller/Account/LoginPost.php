@@ -19,10 +19,10 @@
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Adobe\Firebase\Rewrite\Controller\Account;
+namespace Qsciences\Firebase\Rewrite\Controller\Account;
 
-use Adobe\Firebase\Helper\Data;
-use Adobe\Firebase\Model\Management\AuthManagement;
+use Qsciences\Firebase\Helper\Data;
+use Qsciences\Firebase\Model\Management\AuthManagement;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\Url as CustomerUrl;
 use Magento\Framework\App\Config\ScopeConfigInterface;

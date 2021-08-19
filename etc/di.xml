@@ -19,6 +19,6 @@
   * requires the prior written permission from Adobe.
   ***************************************************************************-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Adobe\Firebase\Api\AuthorizationInterface" type="Adobe\Firebase\Model\Authorization"/>
-    <preference for="Magento\Customer\Controller\Account\LoginPost" type="Adobe\Firebase\Rewrite\Controller\Account\LoginPost" />
+    <preference for="Qsciences\Firebase\Api\AuthorizationInterface" type="Qsciences\Firebase\Model\Authorization"/>
+    <preference for="Magento\Customer\Controller\Account\LoginPost" type="Qsciences\Firebase\Rewrite\Controller\Account\LoginPost" />
 </config>

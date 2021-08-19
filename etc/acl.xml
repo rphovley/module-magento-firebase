@@ -25,8 +25,8 @@
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Adobe_Firebase::config" title="Adobe Firebase Config" translate="title" />
-                            <resource id="Adobe_Firebase::api" title="Adobe Firebase API" translate="title" />
+                            <resource id="Qsciences_Firebase::config" title="Qsciences Firebase Config" translate="title" />
+                            <resource id="Qsciences_Firebase::api" title="Qsciences Firebase API" translate="title" />
                         </resource>
                     </resource>
                 </resource>
