@@ -20,15 +20,15 @@
   ***************************************************************************-->
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <route url="/V1/firebase/authorize" method="POST">
-        <service class="Adobe\Firebase\Api\AuthorizationInterface" method="authorize"/>
+        <service class="Magento\Firebase\Api\AuthorizationInterface" method="authorize"/>
         <resources>
-            <resource ref="Adobe_Firebase::api"/>
+            <resource ref="Magento_Firebase::api"/>
         </resources>
     </route>
     <route url="/V1/firebase/generateToken" method="POST">
-        <service class="Adobe\Firebase\Api\AuthorizationInterface" method="generateToken"/>
+        <service class="Magento\Firebase\Api\AuthorizationInterface" method="generateToken"/>
         <resources>
-            <resource ref="Adobe_Firebase::api"/>
+            <resource ref="Magento_Firebase::api"/>
         </resources>
     </route>
 </routes>

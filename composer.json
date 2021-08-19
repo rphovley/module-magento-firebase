@@ -1,5 +1,5 @@
 {
-  "name": "magento/module-adobe-firebase",
+  "name": "qsciences/module-magento-firebase",
   "description": "Magento Firebase Integrator Module",
   "type": "magento2-module",
   "license": "proprietary",

@@ -20,7 +20,7 @@ declare(strict_types=1);
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Adobe\Firebase\Helper;
+namespace Magento\Firebase\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -29,7 +29,7 @@ use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class Data
- * @package Adobe\Firebase\Helper
+ * @package Magento\Firebase\Helper
  */
 class Data extends AbstractHelper
 {

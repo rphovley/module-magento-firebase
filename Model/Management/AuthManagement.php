@@ -20,9 +20,9 @@ declare(strict_types=1);
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Adobe\Firebase\Model\Management;
+namespace Magento\Firebase\Model\Management;
 
-use Adobe\Firebase\Helper\Data;
+use Magento\Firebase\Helper\Data;
 use Exception;
 use Kreait\Firebase\Factory;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -39,7 +39,7 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Class AuthManagement
- * @package Adobe\Firebase\Model\Management
+ * @package Magento\Firebase\Model\Management
  */
 class AuthManagement
 {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Adobe\Firebase\Model\Resolver;
+namespace Magento\Firebase\Model\Resolver;
 
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
@@ -11,15 +11,15 @@ use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 class GenerateFireBaseToken implements ResolverInterface
 {
     /**
-     * @var \Adobe\Firebase\Model\Authorization
+     * @var \Magento\Firebase\Model\Authorization
      */
     private $authorization;
 
     /**
      * GenerateFireBaseToken constructor.
-     * @param \Adobe\Firebase\Model\Authorization $authorization
+     * @param \Magento\Firebase\Model\Authorization $authorization
      */
-    public function __construct(\Adobe\Firebase\Model\Authorization $authorization)
+    public function __construct(\Magento\Firebase\Model\Authorization $authorization)
     {
         $this->authorization = $authorization;
     }

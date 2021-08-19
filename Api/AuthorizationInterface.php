@@ -20,7 +20,7 @@ declare(strict_types=1);
  * requires the prior written permission from Adobe.
  ******************************************************************************/
 
-namespace Adobe\Firebase\Api;
+namespace Magento\Firebase\Api;
 
 
 interface AuthorizationInterface
