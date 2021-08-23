@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -19,13 +18,15 @@ declare(strict_types=1);
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
  ******************************************************************************/
+declare(strict_types=1);
 
 namespace Qsciences\Firebase\Model;
 
-use Qsciences\Firebase\Api\AuthorizationInterface;
-use Qsciences\Firebase\Model\Management\AuthManagement;
 use Magento\Framework\Exception\AuthenticationException;
 use Magento\Framework\Webapi\Request;
+use Qsciences\Firebase\Api\AuthorizationInterface;
+use Qsciences\Firebase\Helper\Data;
+use Qsciences\Firebase\Model\Management\AuthManagement;
 
 class Authorization implements AuthorizationInterface
 {
@@ -40,7 +41,7 @@ class Authorization implements AuthorizationInterface
     private $request;
 
     /**
-     * @var \Qsciences\Firebase\Helper\Data
+     * @var Data
      */
     private $helper;
 
@@ -48,12 +49,12 @@ class Authorization implements AuthorizationInterface
      * Authorization constructor.
      * @param Request $request
      * @param AuthManagement $authManagement
-     * @param \Qsciences\Firebase\Helper\Data $helper
+     * @param Data $helper
      */
     public function __construct(
         Request $request,
         AuthManagement $authManagement,
-        \Qsciences\Firebase\Helper\Data $helper
+        Data $helper
     ) {
         $this->request = $request;
         $this->authManagement = $authManagement;
@@ -64,7 +65,7 @@ class Authorization implements AuthorizationInterface
      * @param string $jwtToken
      * @param string $firstname
      * @param string $lastname
-     * @return array|mixed|string[]
+     * @return false|mixed|string
      */
     public function authorize(string $jwtToken, string $firstname, string $lastname)
     {
@@ -102,8 +103,8 @@ class Authorization implements AuthorizationInterface
         $customerData = [
             'jwt_token' => $jwtToken,
             'firstname' => $firstname,
-            'lastname'  => $lastname
-            ];
+            'lastname' => $lastname
+        ];
         $customerToken = $this->authManagement->getCustomerToken($customerData);
         if (!$customerToken) {
             $response = [
@@ -118,8 +119,7 @@ class Authorization implements AuthorizationInterface
     /**
      * @param string $email
      * @param string $password
-     * @return mixed|string[]
-     * @throws AuthenticationException
+     * @return false|mixed|string
      */
     public function generateToken($email, $password)
     {
