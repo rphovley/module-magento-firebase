@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -19,13 +18,16 @@ declare(strict_types=1);
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
  ******************************************************************************/
+declare(strict_types=1);
 
 namespace Qsciences\Firebase\Model\Management;
 
-use Qsciences\Firebase\Helper\Data;
 use Exception;
+use Kreait\Firebase\Contract\Auth;
 use Kreait\Firebase\Factory;
+use Lcobucci\JWT\Token\Plain;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Framework\App\ObjectManager;
@@ -35,7 +37,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Integration\Model\Oauth\Token\RequestThrottler;
 use Magento\Integration\Model\Oauth\TokenFactory;
 use Magento\Store\Model\StoreManagerInterface;
-
+use Qsciences\Firebase\Helper\Data;
 
 /**
  * Class AuthManagement
@@ -44,7 +46,7 @@ use Magento\Store\Model\StoreManagerInterface;
 class AuthManagement
 {
     /**
-     * @var \Kreait\Firebase\Factory
+     * @var Factory
      */
     private $fireBaseAuthFactory;
 
@@ -133,10 +135,10 @@ class AuthManagement
     public function getCustomerToken(array $customerData)
     {
         try {
-            /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
+            /** @var Auth $fireBaseAuth */
             $fireBaseAuth = $this->getFireBaseAuth();
 
-            /** @var \Lcobucci\JWT\Token\Plain $verifyToken */
+            /** @var Plain $verifyToken */
             $verifyToken = $fireBaseAuth->verifyIdToken($customerData['jwt_token']);
             if ($payload = $verifyToken->claims()) {
                 $customerData['firebase_user_id'] = $verifyToken->claims()->get('user_id');
@@ -153,7 +155,7 @@ class AuthManagement
     /**
      * Generate Firebase Factory Auth Object
      *
-     * @return \Kreait\Firebase\Contract\Auth|null
+     * @return Auth|null
      * @throws LocalizedException
      */
     private function getFireBaseAuth()
@@ -208,6 +210,26 @@ class AuthManagement
             $customer = $this->createCustomerAccount($customerData);
             // Generate the Customer Token
             return $this->createCustomerAccessToken($customer);
+        }
+    }
+
+    /**
+     * @param string $email
+     * @param string $firebaseUserId
+     * @return CustomerInterface | string
+     */
+    public function setFirebaseDetails(string $email, string $firebaseUserId)
+    {
+        try {
+            $customer = $this->customerRepository->get($email);
+            if (!$customer->getCustomAttribute('firebase_user_id')) {
+                $customer->setCustomAttribute('firebase_user_id', $firebaseUserId);
+                // Return Customer Object
+                return $this->customerRepository->save($customer);
+            }
+            return $customer;
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
     }
 
@@ -295,18 +317,18 @@ class AuthManagement
     public function getFireBaseUserInfo($email, $password)
     {
         try {
-            /** @var \Kreait\Firebase\Contract\Auth $fireBaseAuth */
+            /** @var Auth $fireBaseAuth */
             $fireBaseAuth = $this->getFireBaseAuth();
             $result = $fireBaseAuth->signInWithEmailAndPassword($email, $password);
             if ($result) {
                 /**
-                Array(
-                [localId] => {Customer Firebase User ID}
-                [email] => { Customer Email Address }
-                [displayName] => {Customer Display Name }
-                [idToken] => {JWT TOKEN}
-                )
-                */
+                 * Array(
+                 * [localId] => {Customer Firebase User ID}
+                 * [email] => { Customer Email Address }
+                 * [displayName] => {Customer Display Name }
+                 * [idToken] => {JWT TOKEN}
+                 * )
+                 */
                 return $result->data();
             } else {
                 return false;
@@ -336,26 +358,6 @@ class AuthManagement
             $customer = $this->createCustomerAccount($customerData);
             // Return Customer Object
             return $customer;
-        }
-    }
-
-    /**
-     * @param string $email
-     * @param string $firebaseUserId
-     * @return \Magento\Customer\Api\Data\CustomerInterface | string
-     */
-    public function setFirebaseDetails(string $email, string $firebaseUserId)
-    {
-        try {
-            $customer = $this->customerRepository->get($email);
-            if (!$customer->getCustomAttribute('firebase_user_id')) {
-                $customer->setCustomAttribute('firebase_user_id', $firebaseUserId);
-                // Return Customer Object
-                return $this->customerRepository->save($customer);
-            }
-            return $customer;
-        }catch (Exception $e){
-            return $e->getMessage();
         }
     }
 }

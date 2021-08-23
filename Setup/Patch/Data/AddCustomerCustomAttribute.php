@@ -18,6 +18,7 @@
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
  ******************************************************************************/
+declare(strict_types=1);
 
 namespace Qsciences\Firebase\Setup\Patch\Data;
 

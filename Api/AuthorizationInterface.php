@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 /*******************************************************************************
  * ADOBE CONFIDENTIAL
  * ___________________
@@ -19,9 +18,9 @@ declare(strict_types=1);
  * then your use, modification, or distribution of it
  * requires the prior written permission from Adobe.
  ******************************************************************************/
+declare(strict_types=1);
 
 namespace Qsciences\Firebase\Api;
-
 
 interface AuthorizationInterface
 {
@@ -31,12 +30,12 @@ interface AuthorizationInterface
      * @param string $lastname
      * @return mixed
      */
-    public function authorize(string $jwtToken, string $firstname, string $lastname);
+    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname);
 
     /**
      * @param string $email
      * @param string $password
      * @return mixed
      */
-    public function generateToken($email, $password);
+    public function getFireBaseToken($email, $password);
 }
