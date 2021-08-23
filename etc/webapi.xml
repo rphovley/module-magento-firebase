@@ -19,16 +19,16 @@
   * requires the prior written permission from Adobe.
   ***************************************************************************-->
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <route url="/V1/firebase/authorize" method="POST">
-        <service class="Qsciences\Firebase\Api\AuthorizationInterface" method="authorize"/>
+    <route url="/V1/firebase/getCustomerToken" method="POST">
+        <service class="Qsciences\Firebase\Api\AuthorizationInterface" method="getCustomerToken"/>
         <resources>
-            <resource ref="Magento_Firebase::api"/>
+            <resource ref="Qsciences_Firebase::api"/>
         </resources>
     </route>
-    <route url="/V1/firebase/generateToken" method="POST">
-        <service class="Qsciences\Firebase\Api\AuthorizationInterface" method="generateToken"/>
+    <route url="/V1/firebase/getFireBaseToken" method="POST">
+        <service class="Qsciences\Firebase\Api\AuthorizationInterface" method="getFireBaseToken"/>
         <resources>
-            <resource ref="Magento_Firebase::api"/>
+            <resource ref="Qsciences_Firebase::api"/>
         </resources>
     </route>
 </routes>

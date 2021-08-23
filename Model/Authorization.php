@@ -67,7 +67,7 @@ class Authorization implements AuthorizationInterface
      * @param string $lastname
      * @return false|mixed|string
      */
-    public function authorize(string $jwtToken, string $firstname, string $lastname)
+    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname)
     {
         $response = [];
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
@@ -121,7 +121,7 @@ class Authorization implements AuthorizationInterface
      * @param string $password
      * @return false|mixed|string
      */
-    public function generateToken($email, $password)
+    public function getFireBaseToken($email, $password)
     {
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
             $response = [

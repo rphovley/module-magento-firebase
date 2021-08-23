@@ -30,12 +30,12 @@ interface AuthorizationInterface
      * @param string $lastname
      * @return mixed
      */
-    public function authorize(string $jwtToken, string $firstname, string $lastname);
+    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname);
 
     /**
      * @param string $email
      * @param string $password
      * @return mixed
      */
-    public function generateToken($email, $password);
+    public function getFireBaseToken($email, $password);
 }
