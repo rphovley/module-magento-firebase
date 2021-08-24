@@ -59,7 +59,7 @@ class GenerateFireBaseToken implements ResolverInterface
                 throw new GraphQlInputException(__('"password" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->generateToken($args['input']['email'],
+            $output['result'] = $this->authorization->getFireBaseToken($args['input']['email'],
                 $args['input']['password']);
 
             return $output;
