@@ -143,13 +143,12 @@ class AuthManagement
             if ($payload = $verifyToken->claims()) {
                 $customerData['firebase_user_id'] = $verifyToken->claims()->get('user_id');
                 $customerData['email'] = $verifyToken->claims()->get('email');
-                $customerToken = $this->getCustomerTokenByFireBaseUserData($customerData);
-                return $customerToken;
+                $response = $this->getCustomerTokenByFireBaseUserData($customerData);
+                return $response;
             }
         } catch (Exception $e) {
             return false;
         }
-        return false;
     }
 
     /**
@@ -189,11 +188,11 @@ class AuthManagement
 
     /**
      * @param array $customerData
-     * @return string
+     * @return array
      * @throws AuthenticationException
      * @throws LocalizedException
      */
-    private function getCustomerTokenByFireBaseUserData(array $customerData): string
+    private function getCustomerTokenByFireBaseUserData(array $customerData): array
     {
         /** @var CustomerCollectionFactory $customer */
         $customer = $this->customerCollectionFactory->create()
@@ -204,12 +203,22 @@ class AuthManagement
                If not, Save the User Id as part of Customer Account */
             $this->setFirebaseDetails($customerData['email'], $customerData['firebase_user_id']);
             // Generate the Customer Token
-            return $this->createCustomerAccessToken($customer);
+            $customerToken = $this->createCustomerAccessToken($customer);
+            $response = [
+                'customer_token' => $customerToken,
+                'isNewCustomer' => 0
+            ];
+            return $response;
         } else {
             // Create Customer Account
             $customer = $this->createCustomerAccount($customerData);
             // Generate the Customer Token
-            return $this->createCustomerAccessToken($customer);
+            $customerToken = $this->createCustomerAccessToken($customer);
+            $response = [
+                'customer_token' => $customerToken,
+                'isNewCustomer' => 1
+            ];
+            return $response;
         }
     }
 
@@ -334,7 +343,7 @@ class AuthManagement
                 return false;
             }
         } catch (Exception $e) {
-            throw new AuthenticationException(__('Invalid Email or Password. Please Try again'));
+            return false;
         }
     }
 
