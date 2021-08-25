@@ -26,22 +26,22 @@ use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Qsciences\Firebase\Model\Authorization;
+use Qsciences\Firebase\Model\Management\AuthManagement;
 
 class GenerateFireBaseToken implements ResolverInterface
 {
     /**
-     * @var Authorization
+     * @var AuthManagement
      */
-    private $authorization;
+    private $authManagement;
 
     /**
      * GenerateFireBaseToken constructor.
-     * @param Authorization $authorization
+     * @param AuthManagement $authManagement
      */
-    public function __construct(Authorization $authorization)
+    public function __construct(AuthManagement $authManagement)
     {
-        $this->authorization = $authorization;
+        $this->authManagement = $authManagement;
     }
 
     /**
@@ -59,11 +59,26 @@ class GenerateFireBaseToken implements ResolverInterface
                 throw new GraphQlInputException(__('"password" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->getFireBaseToken($args['input']['email'],
-                $args['input']['password']);
+            $fireBaseResponse = $this->authManagement->getFireBaseUserInfo(
+                $args['input']['email'],
+                $args['input']['password']
+            );
 
-            return $output;
+            if ($fireBaseResponse) {
+                $response = [
+                    'status' => 'success',
+                    'message' => __('FireBase Token Generated Successfully'),
+                    'firebase_token' => $fireBaseResponse['idToken']
+                ];
 
+                return $response;
+            } else {
+                $response = [
+                    'status' => 'error',
+                    'message' => __('Invalid Information')
+                ];
+                return $response;
+            }
         } catch (Exception $e) {
             throw new GraphQlInputException(__('Error while processing request.'), $e);
         }

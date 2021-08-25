@@ -88,11 +88,6 @@ class AuthManagement
     private $eventManager;
 
     /**
-     * @var null
-     */
-    private $fireBaseAuth = null;
-
-    /**
      * @var RequestThrottler
      */
     private $requestThrottler;
@@ -130,7 +125,7 @@ class AuthManagement
 
     /**
      * @param array $customerData
-     * @return false|string
+     * @return array|bool
      */
     public function getCustomerToken(array $customerData)
     {
@@ -146,6 +141,9 @@ class AuthManagement
                 $response = $this->getCustomerTokenByFireBaseUserData($customerData);
                 return $response;
             }
+
+            return false;
+
         } catch (Exception $e) {
             return false;
         }
@@ -287,10 +285,8 @@ class AuthManagement
     }
 
     /**
-     * Function to Create New Customer Account
-     *
      * @param $customerData
-     * @return CustomerRepository|CustomerInterfaceFactory
+     * @return CustomerInterface
      * @throws LocalizedException
      */
     private function createCustomerAccount($customerData)
@@ -299,7 +295,7 @@ class AuthManagement
             $websiteId = $this->storeManager->getDefaultStoreView()->getWebsiteId();
             $storeId = $this->storeManager->getDefaultStoreView()->getId();
             $customerPassword = md5($customerData['firebase_user_id']);
-            /** @var CustomerInterfaceFactory $customer */
+
             $customer = $this->customerInterfaceFactory->create();
             $customer->setEmail($customerData['email']);
             $customer->setFirstname($customerData['firstname']);
@@ -307,21 +303,20 @@ class AuthManagement
             $customer->setWebsiteId($websiteId);
             $customer->setStoreId($storeId);
             $customer->setCustomAttribute('firebase_user_id', $customerData['firebase_user_id']);
-            /** @var CustomerRepository $customer */
+
             $customer = $this->customerRepository->save($customer, $customerPassword);
+
             return $customer;
+
         } catch (Exception $e) {
             throw new LocalizedException(__($e->getMessage()));
         }
     }
 
     /**
-     * Get Firebase Token by using Email & Password
-     *
      * @param $email
      * @param $password
-     * @return 0|bool
-     * @throws AuthenticationException
+     * @return array|bool
      */
     public function getFireBaseUserInfo($email, $password)
     {

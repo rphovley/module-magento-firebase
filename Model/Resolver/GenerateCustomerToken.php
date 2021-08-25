@@ -26,23 +26,22 @@ use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Qsciences\Firebase\Model\Authorization;
+use Qsciences\Firebase\Model\Management\AuthManagement;
 
 class GenerateCustomerToken implements ResolverInterface
 {
+    /**
+     * @var AuthManagement
+     */
+    private $authManagement;
 
     /**
-     * @var Authorization
+     * GenerateFireBaseToken constructor.
+     * @param AuthManagement $authManagement
      */
-    private $authorization;
-
-    /**
-     * GenerateCustomerToken constructor.
-     * @param Authorization $authorization
-     */
-    public function __construct(Authorization $authorization)
+    public function __construct(AuthManagement $authManagement)
     {
-        $this->authorization = $authorization;
+        $this->authManagement = $authManagement;
     }
 
     /**
@@ -63,10 +62,31 @@ class GenerateCustomerToken implements ResolverInterface
                 throw new GraphQlInputException(__('"last_name" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->getCustomerToken($args['input']['jwt_token'],
-                $args['input']['first_name'], $args['input']['last_name']);
+            $customerData = [
+                'jwt_token' => $args['input']['jwt_token'],
+                'firstname' => $args['input']['first_name'],
+                'lastname' => $args['input']['last_name']
+            ];
 
-            return $output;
+            $customerTokenResponse = $this->authManagement->getCustomerToken($customerData);
+            if ($customerTokenResponse) {
+                $response = array_merge(
+                    [
+                        'status' => 'success',
+                        'message' => __('Customer Token Generated Successfully')
+                    ],
+                    $customerTokenResponse
+                );
+
+                return $response;
+            } else {
+                $response = [
+                    'status' => 'error',
+                    'message' => __('Invalid Information')
+                ];
+
+                return $response;
+            }
 
         } catch (Exception $e) {
             throw new GraphQlInputException(__('Error while processing request.'), $e);

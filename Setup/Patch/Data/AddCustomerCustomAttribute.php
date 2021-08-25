@@ -81,7 +81,7 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
                 'label' => 'Firebase User ID',
                 'input' => 'text',
                 'source' => '',
-                'required' => true,
+                'required' => false,
                 'visible' => true,
                 'position' => 500,
                 'system' => false,
