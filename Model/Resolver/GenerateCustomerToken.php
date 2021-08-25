@@ -63,7 +63,7 @@ class GenerateCustomerToken implements ResolverInterface
                 throw new GraphQlInputException(__('"last_name" can not be empty'));
             }
 
-            $output['result'] = $this->authorization->authorize($args['input']['jwt_token'],
+            $output['result'] = $this->authorization->getCustomerToken($args['input']['jwt_token'],
                 $args['input']['first_name'], $args['input']['last_name']);
 
             return $output;
