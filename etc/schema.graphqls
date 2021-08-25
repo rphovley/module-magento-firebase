@@ -1,6 +1,6 @@
 type Mutation {
-    getFireBaseToken( input: FireBaseTokenInput!): OutputData @resolver(class: "Qsciences\\Firebase\\Model\\Resolver\\GenerateFireBaseToken") @doc(description:"Retrieve the FireBase token")
-    getCustomerToken( input: CustomerTokenInput!): OutputData @resolver(class: "Qsciences\\Firebase\\Model\\Resolver\\GenerateCustomerToken") @doc(description:"Retrieve the customer token")
+    getFireBaseToken( input: FireBaseTokenInput!): FireBaseTokenOutput @resolver(class: "Qsciences\\Firebase\\Model\\Resolver\\GenerateFireBaseToken") @doc(description:"Retrieve the FireBase token")
+    getCustomerToken( input: CustomerTokenInput!): CustomerTokenOutput @resolver(class: "Qsciences\\Firebase\\Model\\Resolver\\GenerateCustomerToken") @doc(description:"Retrieve the customer token")
 }
 
 input FireBaseTokenInput {
@@ -14,6 +14,15 @@ input CustomerTokenInput {
     last_name : String! @doc(description: "Customer Last Name")
 }
 
-type OutputData {
-    result: String
+type FireBaseTokenOutput {
+    status: String
+    message : String
+    firebase_token : String
+}
+
+type CustomerTokenOutput {
+    status: String
+    message : String
+    customer_token : String
+    isNewCustomer : Int
 }

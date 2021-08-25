@@ -28,14 +28,15 @@ interface AuthorizationInterface
      * @param string $jwtToken
      * @param string $firstname
      * @param string $lastname
-     * @return mixed
+     * @return array|mixed
      */
     public function getCustomerToken(string $jwtToken, string $firstname, string $lastname);
 
     /**
      * @param string $email
      * @param string $password
-     * @return mixed
+     * @return array
+     * @throws \Magento\Framework\Exception\AuthenticationException
      */
     public function getFireBaseToken($email, $password);
 }
