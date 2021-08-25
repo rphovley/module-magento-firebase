@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace Qsciences\Firebase\Model;
 
-use Magento\Framework\Exception\AuthenticationException;
 use Magento\Framework\Webapi\Request;
 use Qsciences\Firebase\Api\AuthorizationInterface;
 use Qsciences\Firebase\Helper\Data;
@@ -77,23 +76,23 @@ class Authorization implements AuthorizationInterface
             ];
             return json_encode($response);
         }
-        if (!$jwtToken) {
+        if (empty($jwtToken)) {
             $response = [
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Firebase JWT Token is missing'
             ];
             return json_encode($response);
         }
-        if (!$firstname) {
+        if (empty($firstname)) {
             $response = [
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Firstname Field value is missing'
             ];
             return json_encode($response);
         }
-        if (!$lastname) {
+        if (empty($lastname)) {
             $response = [
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Lastname Field value is missing'
             ];
             return json_encode($response);
@@ -105,15 +104,17 @@ class Authorization implements AuthorizationInterface
             'firstname' => $firstname,
             'lastname' => $lastname
         ];
-        $customerToken = $this->authManagement->getCustomerToken($customerData);
-        if (!$customerToken) {
+        $customerTokenResponse = $this->authManagement->getCustomerToken($customerData);
+        if ($customerTokenResponse) {
+            $response = array_merge(['status' => 'success'], $customerTokenResponse);
+            return json_encode($response);
+        } else {
             $response = [
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Invalid FireBase JWT Token'
             ];
             return json_encode($response);
         }
-        return json_encode($customerToken);
     }
 
     /**
@@ -125,15 +126,24 @@ class Authorization implements AuthorizationInterface
     {
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
             $response = [
-                'status' => 'Error',
+                'status' => 'error',
                 'message' => 'Google Firebase Authentication is not Enabled'
             ];
             return json_encode($response);
         }
-        if (!$email || !$password) {
+
+        if (empty($email)) {
             $response = [
-                'status' => 'Error',
-                'message' => 'Invalid Password'
+                'status' => 'error',
+                'message' => 'Email Address Field value is missing.'
+            ];
+            return json_encode($response);
+        }
+
+        if (empty($password)) {
+            $response = [
+                'status' => 'error',
+                'message' => 'Password Field value is missing'
             ];
             return json_encode($response);
         }
@@ -148,8 +158,8 @@ class Authorization implements AuthorizationInterface
             return json_encode($response);
         } else {
             $response = [
-                'status' => 'Error',
-                'message' => 'Invalid Email / Password'
+                'status' => 'error',
+                'message' => 'Invalid Information'
             ];
             return json_encode($response);
         }
