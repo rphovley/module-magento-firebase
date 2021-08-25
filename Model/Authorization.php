@@ -64,7 +64,7 @@ class Authorization implements AuthorizationInterface
      * @param string $jwtToken
      * @param string $firstname
      * @param string $lastname
-     * @return array|mixed
+     * @return array|false|mixed|string
      */
     public function getCustomerToken(string $jwtToken, string $firstname, string $lastname)
     {
@@ -73,28 +73,28 @@ class Authorization implements AuthorizationInterface
                 'status' => 'Error',
                 'message' => __('Google Firebase Authentication is not Enabled')
             ];
-            return [$response];
+            return json_encode($response);
         }
         if (empty($jwtToken)) {
             $response = [
                 'status' => 'error',
                 'message' => __('Firebase JWT Token is missing')
             ];
-            return [$response];
+            return json_encode($response);
         }
         if (empty($firstname)) {
             $response = [
                 'status' => 'error',
                 'message' => __('Firstname Field value is missing')
             ];
-            return [$response];
+            return json_encode($response);
         }
         if (empty($lastname)) {
             $response = [
                 'status' => 'error',
                 'message' => __('Lastname Field value is missing')
             ];
-            return [$response];
+            return json_encode($response);
         }
 
         /** @var Magento Customer Token $tokenData */
@@ -106,21 +106,20 @@ class Authorization implements AuthorizationInterface
         $customerTokenResponse = $this->authManagement->getCustomerToken($customerData);
         if ($customerTokenResponse) {
             $response = array_merge(['status' => 'success'], $customerTokenResponse);
-            return [$response];
+            return json_encode($response);
         } else {
             $response = [
                 'status' => 'error',
                 'message' => __('Invalid FireBase JWT Token')
             ];
-            return [$response];
+            return json_encode($response);
         }
     }
 
     /**
      * @param string $email
      * @param string $password
-     * @return array
-     * @throws \Magento\Framework\Exception\AuthenticationException
+     * @return array|false|string
      */
     public function getFireBaseToken($email, $password)
     {
@@ -129,7 +128,7 @@ class Authorization implements AuthorizationInterface
                 'status' => 'error',
                 'message' => __('Google Firebase Authentication is not Enabled')
             ];
-            return [$response];
+            return json_encode($response);
         }
 
         if (empty($email)) {
@@ -137,7 +136,7 @@ class Authorization implements AuthorizationInterface
                 'status' => 'error',
                 'message' => __('Email Address Field value is missing.')
             ];
-            return [$response];
+            return json_encode($response);
         }
 
         if (empty($password)) {
@@ -145,7 +144,7 @@ class Authorization implements AuthorizationInterface
                 'status' => 'error',
                 'message' => __('Password Field value is missing')
             ];
-            return [$response];
+            return json_encode($response);
         }
 
         /** @var Firebase Token $tokenData */
@@ -156,13 +155,13 @@ class Authorization implements AuthorizationInterface
                 'message' => __('FireBase Token Generated Successfully'),
                 'firebase_token' => $tokenData['idToken']
             ];
-            return [$response];
+            return json_encode($response);
         } else {
             $response = [
                 'status' => 'error',
                 'message' => __('Invalid Information')
             ];
-            return [$response];
+            return json_encode($response);
         }
     }
 }
