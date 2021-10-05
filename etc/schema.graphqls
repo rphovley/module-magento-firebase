@@ -12,6 +12,8 @@ input CustomerTokenInput {
     jwt_token : String! @doc(description: "Customer JWT Token")
     first_name : String! @doc(description: "Customer First Name")
     last_name : String! @doc(description: "Customer Last Name")
+    associate_id : String! @doc(description: "Associate Id")
+    legacy_associate_id : String! @doc(description: "Legacy Associate Id")
 }
 
 type FireBaseTokenOutput {

@@ -62,10 +62,20 @@ class GenerateCustomerToken implements ResolverInterface
                 throw new GraphQlInputException(__('"last_name" can not be empty'));
             }
 
+            if (!isset($args['input']['associate_id'])) {
+                throw new GraphQlInputException(__('"associate_id" can not be empty'));
+            }
+
+            if (!isset($args['input']['legacy_associate_id'])) {
+                throw new GraphQlInputException(__('"legacy_associate_id" can not be empty'));
+            }
+
             $customerData = [
                 'jwt_token' => $args['input']['jwt_token'],
                 'firstname' => $args['input']['first_name'],
-                'lastname' => $args['input']['last_name']
+                'lastname' => $args['input']['last_name'],
+                'associate_id' => $args['input']['associate_id'],
+                'legacy_associate_id' => $args['input']['legacy_associate_id']
             ];
 
             $customerTokenResponse = $this->authManagement->getCustomerToken($customerData);

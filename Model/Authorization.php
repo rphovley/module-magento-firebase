@@ -64,9 +64,11 @@ class Authorization implements AuthorizationInterface
      * @param string $jwtToken
      * @param string $firstname
      * @param string $lastname
+     * @param string $associate_id
+     * @param string $legacy_associate_id
      * @return array|false|mixed|string
      */
-    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname)
+    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname, string $associate_id, string $legacy_associate_id)
     {
         if (!$this->helper->isFireBaseAuthenticationEnabled()) {
             $response = [
@@ -96,12 +98,28 @@ class Authorization implements AuthorizationInterface
             ];
             return json_encode($response);
         }
+        if (empty($associate_id)) {
+            $response = [
+                'status' => 'error',
+                'message' => __('associate_id value is missing')
+            ];
+            return json_encode($response);
+        }
+        if (empty($legacy_associate_id)) {
+            $response = [
+                'status' => 'error',
+                'message' => __('legacy_associate_id value is missing')
+            ];
+            return json_encode($response);
+        }
 
         /** @var Magento Customer Token $tokenData */
         $customerData = [
             'jwt_token' => $jwtToken,
             'firstname' => $firstname,
-            'lastname' => $lastname
+            'lastname' => $lastname,
+            'associate_id' => $associate_id,
+            'legacy_associate_id' => $legacy_associate_id
         ];
         $customerTokenResponse = $this->authManagement->getCustomerToken($customerData);
         if ($customerTokenResponse) {

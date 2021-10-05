@@ -28,9 +28,11 @@ interface AuthorizationInterface
      * @param string $jwtToken
      * @param string $firstname
      * @param string $lastname
+     * @param string $associate_id
+     * @param string $legacy_associate_id
      * @return array|false|mixed|string
      */
-    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname);
+    public function getCustomerToken(string $jwtToken, string $firstname, string $lastname, string $associate_id, string $legacy_associate_id);
 
     /**
      * @param string $email

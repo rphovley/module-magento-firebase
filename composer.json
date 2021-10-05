@@ -10,7 +10,6 @@
     "magento/module-webapi": "100.4.*",
     "kreait/firebase-php": "^5.0"
   },
-  "type": "magento2-module",
   "autoload": {
     "psr-4": {
       "Qsciences\\Firebase\\": ""

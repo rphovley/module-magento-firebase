@@ -73,6 +73,15 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
         $this->moduleDataSetup->getConnection()->startSetup();
         /** @var CustomerSetup $customerSetup */
         $customerSetup = $this->customerSetupFactory->create(['setup' => $this->moduleDataSetup]);
+        $this->createFirebaseIdAttribute($customerSetup);
+        $this->createAssociateIdAttribute($customerSetup);
+        $this->createLegacyAssociateIdAttribute($customerSetup);
+
+        $this->moduleDataSetup->getConnection()->endSetup();
+    }
+
+    private function createFirebaseIdAttribute($customerSetup)
+    {
         $customerSetup->addAttribute(
             Customer::ENTITY,
             'firebase_user_id',
@@ -98,10 +107,65 @@ class AddCustomerCustomAttribute implements DataPatchInterface, PatchRevertableI
             ]
         );
         $attribute->save();
-
-        $this->moduleDataSetup->getConnection()->endSetup();
     }
 
+    private function createAssociateIdAttribute($customerSetup)
+    {
+        $customerSetup->addAttribute(
+            Customer::ENTITY,
+            'associate_id',
+            [
+                'type' => 'varchar',
+                'label' => 'Associate ID',
+                'input' => 'text',
+                'source' => '',
+                'required' => false,
+                'visible' => true,
+                'position' => 501,
+                'system' => false,
+                'backend' => ''
+            ]
+        );
+
+        $attribute = $customerSetup->getEavConfig()->getAttribute(
+            'customer', 'associate_id')->addData(
+            [
+                'used_in_forms' => [
+                    'adminhtml_customer'
+                ]
+            ]
+        );
+        $attribute->save();
+    }
+
+    private function createLegacyAssociateIdAttribute($customerSetup)
+    {
+        $customerSetup->addAttribute(
+            Customer::ENTITY,
+            'legacy_associate_id',
+            [
+                'type' => 'varchar',
+                'label' => 'Legacy Associate ID',
+                'input' => 'text',
+                'source' => '',
+                'required' => false,
+                'visible' => true,
+                'position' => 502,
+                'system' => false,
+                'backend' => ''
+            ]
+        );
+
+        $attribute = $customerSetup->getEavConfig()->getAttribute(
+            'customer', 'legacy_associate_id')->addData(
+            [
+                'used_in_forms' => [
+                    'adminhtml_customer'
+                ]
+            ]
+        );
+        $attribute->save();
+    }
     /*
      *
      */

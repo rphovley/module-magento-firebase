@@ -303,6 +303,8 @@ class AuthManagement
             $customer->setWebsiteId($websiteId);
             $customer->setStoreId($storeId);
             $customer->setCustomAttribute('firebase_user_id', $customerData['firebase_user_id']);
+            $customer->setCustomAttribute('associate_id', $customerData['associate_id']);
+            $customer->setCustomAttribute('legacy_associate_id', $customerData['legacy_associate_id']);
 
             $customer = $this->customerRepository->save($customer, $customerPassword);
 
